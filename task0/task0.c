@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include "logotype.c"
 
-int End(void)
+void End(void)
 {
     printf("Нажмите любую клавишу!\n");
     getchar();
-    return 0;
+    return;
 }
 
 int main(void)
