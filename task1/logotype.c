@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int Logo(void)
+int logo(void)
 {
     printf("████▀▀▀████\n");
     printf("██▀══▀▀═▀██\n");
