@@ -12,6 +12,7 @@ int End(void)
 int main(void)
 {
     Logo();
+    printf("Описание программы: Логотип и послание миру\n");
     printf("Hello, World!\n");
     End();
     return 0;
