@@ -4,39 +4,20 @@
 #include <math.h>
 #include "logotype.c"
 
-double mass1, radius, density = 100;
+double mass, radius, density, thenkness, volume_inner, volume_outer, volume;
 
-double input_radius(void)
+double validate_input(void)
 {
+    char input[100];
     double number;
-    char unit[10];
 
-    scanf("%lf %s", &number, &unit);
-    if (strcmp(unit, "мм") == 0)
+    fgets(input, sizeof(input), stdin);
+    if (sscanf(input, "%lf", &number) != 1)
     {
-        return number * 0.001;
-    }
-    if (strcmp(unit, "см") == 0)
-    {
-        return number * 0.01;
-    }
-    if (strcmp(unit, "дм") == 0)
-    {
-        return number * 0.1;
-    }
-    if (strcmp(unit, "м") == 0)
-    {
-        return number;
-    }
-    if (strcmp(unit, "км") == 0)
-    {
-        return number * 1000;
-    }
-    else
-    {
-        printf("Ошибка: неизвестная единица измерения.\n");
+        printf("Введено некорретное число!");
         exit(1);
     }
+    return number;
 }
 
 int main(void)
@@ -44,12 +25,21 @@ int main(void)
     logo();
     printf("Вычисление массы сферической оболочки\n");
 
-    printf("Введите радиус сферы:\n");\
-    printf("Укажити число и единицу измерения(мм, см, дм, м, км):\n");
-    printf("Пример ввода: 10 см\n");
-    radius = input_radius();
-    mass1 = 4.0 / 3.0 * M_PI * pow(radius * 0.001, 3) * density;
+    printf("Введите радиус сферы, формат ввода целое или дробное число в метрах:\n");
+    printf("Пример ввода: 10 или 10.0\n");
+    radius = validate_input();
 
-    printf("mass1 = %f\n", mass1);
+    printf("Принято значение %f\n", radius);
+
+    // thenkness = 10;
+    // density = 7.85;
+
+    // volume = 4.0 / 3.0 * M_PI * pow(radius, 3);
+    // volume_inner = 4.0 / 3.0 * M_PI * pow(radius - thenkness, 3);
+    // volume_outer = volume - volume_inner;
+
+    // mass = volume_outer * density;
+
+    // printf("mass = %f\n", mass);
     return 0;
 }
