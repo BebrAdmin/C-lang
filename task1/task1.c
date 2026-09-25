@@ -10,29 +10,30 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        printf("Ошибка данных!\n");
-        printf("Используйте %s привет или %s hello\n", argv[0], argv[0]);
-        printf("Нажмите любую клавишу!\n");
+        printf("Ошибка ввода данных!\n");
+        printf("Используйте %s привет или %s hello\n\n", argv[0], argv[0]);
+        printf("Нажмите Enter!\n");
         getchar();
         exit(0);
     }
     if (strcmp(argv[1], "hello") == 0)
     {
-        printf("Hello, Syslik!\n");
-        printf("Нажмите любую клавишу!\n");
+        printf("Hello, Syslik!\n\n");
+        printf("Нажмите Enter!\n");
         getchar();
         exit(0);
     }
 
     if (strcmp(argv[1], "привет") == 0)
     {
-        printf("Привет, Суслик!\n");
-        printf("Нажмите любую клавишу!\n");
+        printf("Привет, Суслик!\n\n");
+        printf("Нажмите Enter!\n");
         getchar();
         exit(0);
     }
     printf("Таких не знаем!\n");
-    printf("Используйте %s привет или %s hello\n", argv[0], argv[0]);
-    printf("Нажмите любую клавишу!\n");
+    printf("Используйте %s привет или %s hello\n\n", argv[0], argv[0]);
+    printf("Нажмите Enter!\n");
+    getchar();
     return 0;
 }

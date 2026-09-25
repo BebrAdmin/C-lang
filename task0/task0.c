@@ -11,8 +11,8 @@ void the_end(void)
 
 int main(void)
 {
-    logo();
     printf("Описание программы: Логотип и послание миру\n");
+    logo();
     printf("Hello, World!\n");
     the_end();
     return 0;

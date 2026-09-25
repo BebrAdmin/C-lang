@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 #include "logotype.c"
 
-double mass, radius, density, thickness, volume_inner, volume_shell, volume_total;
+// const double PI = 3.141592653589793;
 
 void the_end(void)
 {
@@ -29,8 +28,10 @@ double validate_input(void)
 
 int main(void)
 {
+    double mass, radius, density, thickness, volume_inner, volume_shell, volume_total;
+
     logo();
-    printf("Вычисление массы сферической оболочки\n");
+    printf("Описание программы: вычисление массы сферической оболочки\n");
 
     printf("Введите радиус сферы.\n");
     printf("Допустимое значение: положительное целое или десятичное число в метрах.\n");

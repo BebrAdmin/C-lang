@@ -7,6 +7,6 @@ int logo(void)
     printf("██═█═══█═██\n");
     printf("████═█═████\n");
     printf("███▄▄█▄▄███\n");
-    printf("\nZhuravlev V.I. IVT-12\n");
+    printf("Журавлев В.И. ИВТ-12\n");
     return 0;
 }
