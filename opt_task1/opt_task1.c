@@ -31,6 +31,14 @@ void logger(const char log_message[])
     fclose(log_file);
 }
 
+void the_end(void)
+{
+    printf("\nНажмите Enter!\n");
+    logger("Программа завершила работу с ошибкой");
+    getchar();
+    exit(1);
+}
+
 double validate_input(void)
 {
     char input[100];
@@ -41,8 +49,7 @@ double validate_input(void)
     {
         printf("Ошибка: введено некорректное числовое значение.\n");
         logger("Ошибка: не удалось получить числовое значение");
-        getchar();
-        exit(1);
+        the_end();
     }
     return number;
 }
@@ -63,8 +70,7 @@ int main(void)
     {
         printf("Ошибка: значение должно быть больше нуля!\n");
         logger("Ошибка: введено неположительное количество баррелей");
-        getchar();
-        exit(1);
+        the_end();
     }
 
     logger("Пользователь ввел корректное значение");
