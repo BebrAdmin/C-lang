@@ -10,70 +10,61 @@ void the_end(void)
     exit(1);
 }
 
-double validate_input(void)
-{
-    char input[100];
-    double number;
-
-    fgets(input, sizeof(input), stdin);
-    if (sscanf(input, "%lf", &number) != 1)
-    {
-        printf("\nОшибка: введено некорректное числовое значение.\n");
-        the_end();
-    }
-    return number;
-}
-
-void check_var(double number, const char param[])
-{
-    if (number <= 0)
-    {
-        printf("\nОшибка: Длина стороны %s треугольника должна быть больше нуля.\n", param);
-        the_end();
-    }
-    return;
-}
-
-int main(void)
+int main(int argc, char *argv[])
 {
     logo();
     printf("\nОписание программы: вычисление площади и периметра треугольника\n\n");
 
-    double side_a, side_b, side_c, perimeter, semi_perimeter, area;
+    double perimeter, semi_perimeter, area;
+    double sides[3];
+    char *end;
 
-    printf("Введите длину стороны A треугольника\n");
-    printf("Допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
-    printf("Пример ввода: 10 или 10.5\n");
-    side_a = validate_input();
-    check_var(side_a, "А");
-
-    printf("Введите длину стороны B треугольника\n");
-    printf("Допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
-    printf("Пример ввода: 10 или 10.5\n");
-    side_b = validate_input();
-    check_var(side_b, "B");
-
-    printf("Введите длину стороны C треугольника\n");
-    printf("Допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
-    printf("Пример ввода: 10 или 10.5\n");
-    side_c = validate_input();
-    check_var(side_c, "C");
-
-    if (side_a + side_b <= side_c || side_a + side_c <= side_b || side_b + side_c <= side_a)
+    if (argc < 4)
     {
-        printf("\nОшибка: треугольник с заданными сторонами не существует.\n");
+        printf("Не хватает аргументов!\n");
+        printf("Используйте %s <число> <число> <число>\n", argv[0]);
+        printf("<число> - длина одной из сторон треугольника\n");
+        printf("Для <число> допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
+        printf("Например: %s 3.5 4 6.75\n", argv[0]);
         the_end();
     }
 
-    perimeter = side_a + side_b + side_c;
+    for (int i = 0; i < 3; i++)
+    {
+        sides[i] = strtod(argv[i + 1], &end);
+        if (end == argv[i + 1] || *end != '\0' || !isfinite(sides[i]))
+        {
+            printf("Некорректное значение стороны треугольника: %s\n", argv[i + 1]);
+            printf("Значение длины стороны треугольника должно быть строго числом!\n");
+            printf("Допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
+            printf("Например: %s 3.5 4 6.75\n", argv[0]);
+            the_end();
+        }
+        if (sides[i] <= 0)
+        {
+            printf("Некорректное значение стороны треугольника: %s\n", argv[i + 1]);
+            printf("Длина стороны должна быть больше нуля.\n");
+            printf("Допустимое значение: положительное целое число или десятичная дробь (в метрах)\n");
+            printf("Например: %s 3.5 4 6.75\n", argv[0]);
+            the_end();
+        }
+    }
+
+    if (sides[0] + sides[1] <= sides[2] || sides[0] + sides[2] <= sides[1] || sides[1] + sides[2] <= sides[0])
+    {
+        printf("Ошибка: треугольник с заданными сторонами не существует.\n");
+        the_end();
+    }
+
+    perimeter = sides[0] + sides[1] + sides[2];
 
     // Формула Герона
     semi_perimeter = perimeter / 2;
-    area = sqrt(semi_perimeter * (semi_perimeter - side_a) * (semi_perimeter - side_b) * (semi_perimeter - side_c));
+    area = sqrt(semi_perimeter * (semi_perimeter - sides[0]) * (semi_perimeter - sides[1]) * (semi_perimeter - sides[2]));
 
-    printf("\nДлина стороны А треугольника: %f м\n", side_a);
-    printf("Длина стороны B треугольника: %f м\n", side_b);
-    printf("Длина стороны C треугольника: %f м\n", side_c);
+    printf("\nДлина стороны А треугольника: %f м\n", sides[0]);
+    printf("Длина стороны B треугольника: %f м\n", sides[1]);
+    printf("Длина стороны C треугольника: %f м\n", sides[2]);
     printf("\nРезультат:\n");
     printf("Периметр треугольника: %f м\n", perimeter);
     printf("Площадь треугольника: %f м²\n", area);

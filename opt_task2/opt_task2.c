@@ -1,63 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
-#include <stdarg.h>
 #include "logotype.c"
 
-void logger(const char format[], ...)
-{
-    FILE *log_file = fopen("proga.log", "a");
-
-    if (log_file == NULL)
-    {
-        return;
-    }
-
-    time_t now = time(NULL);
-    struct tm *time_info = localtime(&now);
-    char time_string[30];
-
-    strftime(
-        time_string,
-        sizeof(time_string),
-        "%Y-%m-%d %H:%M:%S",
-        time_info);
-
-    fprintf(log_file, "[%s] ", time_string);
-
-    va_list args;
-    va_start(args, format);
-
-    vfprintf(log_file, format, args);
-
-    va_end(args);
-
-    fprintf(log_file, "\n");
-
-    fclose(log_file);
-}
+// mode_input = 0; // arg input
+int mode_input = 1; // file input
 
 void the_end(void)
 {
     printf("\nНажмите Enter!\n");
-    logger("Программа завершила работу с ошибкой");
     getchar();
     exit(1);
-}
-
-int validate_input(void)
-{
-    char input[100];
-    int number;
-
-    fgets(input, sizeof(input), stdin);
-    if (sscanf(input, "%d", &number) != 1)
-    {
-        printf("Ошибка: введено некорректное числовое значение.\n");
-        logger("Ошибка: не удалось получить числовое значение");
-        the_end();
-    }
-    return number;
 }
 
 int random_num(void)
@@ -65,58 +19,117 @@ int random_num(void)
     return rand() % 201 - 100;
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    int m, n;
-    srand(time(NULL));
-    logger("Программа запущена");
+    int m = 0, n = 0;
+    char mode[30] = "";
+
+    srand((unsigned int)time(NULL));
 
     logo();
     printf("\nОписание программы: Отсортировать строки двумерного массива MxN по минимальному элементу в строке.\n");
 
-    printf("\nВведите M - кол-во строк в двумерном массиве:\n");
-    printf("Допустимое значение: положительное целое число\n");
-    printf("Если будет введенно десятично дробное число, то программа считает целую часть (Нарпимер: 10.545 -> 10)\n");
-    printf("Пример ввода: 4\n");
-    m = validate_input();
-    if (m <= 0)
+    if (mode_input == 0)
     {
-        printf("Ошибка: значение должно быть больше нуля!\n");
-        logger("Ошибка: введено неположительное значение M");
+        if (argc < 3)
+        {
+            printf("Ошибка: укажите M и N!\n");
+            printf("Пример: %s 4 5\n", argv[0]);
+            the_end();
+        }
+
+        m = atoi(argv[1]);
+        n = atoi(argv[2]);
+        strcpy(mode, "random");
+    }
+    else if (mode_input == 1)
+    {
+        FILE *config = fopen("program.conf", "r");
+        if (config == NULL)
+        {
+            printf("Ошибка: не найден файл program.conf!\n");
+            printf("Создайте его в текущей рабочей директории.\n");
+            the_end();
+        }
+
+        char line[200];
+        char key[30];
+        char value[30];
+
+        // Читаем весь файл построчно. Повторное присвоение заменяет старое.
+        while (fgets(line, sizeof(line), config) != NULL)
+        {
+            // Убираем комментарии после #
+            char *comment = strchr(line, '#');
+            if (comment != NULL)
+            {
+                *comment = '\0';
+            }
+
+            if (sscanf(line, " %29[^= ] = %29s", key, value) == 2)
+            {
+                if (strcmp(key, "m") == 0)
+                {
+                    m = atoi(value);
+                }
+                else if (strcmp(key, "n") == 0)
+                {
+                    n = atoi(value);
+                }
+                else if (strcmp(key, "mode") == 0)
+                {
+                    strcpy(mode, value);
+                }
+            }
+        }
+
+        fclose(config);
+    }
+    else
+    {
+        printf("Ошибка: неизвестный режим ввода!\n");
         the_end();
     }
-    logger("Принято значение M = %d", m);
 
-    printf("\nВведите N - кол-во элементов строки в двумерном массиве:\n");
-    printf("Допустимое значение: положительное целое число\n");
-    printf("Если будет введенно десятично дробное число, то программа считает целую часть (Нарпимер: 10.545 -> 10)\n");
-    printf("Пример ввода: 5\n");
-    n = validate_input();
-    if (n <= 0)
+    if (m <= 0 || n <= 0 || m > 1000 || n > 1000 || (long long)m * n > 100000)
     {
-        printf("Ошибка: значение должно быть больше нуля!\n");
-        logger("Ошибка: введено неположительное значение N");
+        printf("Ошибка: M и N должны быть больше 0, а размер массива - не больше 100000 элементов!\n");
         the_end();
     }
-    logger("Принято значение N = %d", n);
 
-    // Объявление двухмерного массива под полученным значениям M и N
+    if (strcmp(mode, "random") != 0 &&
+        strcmp(mode, "sequence") != 0 &&
+        strcmp(mode, "reverse") != 0)
+    {
+        printf("Ошибка: неизвестный способ заполнения массива!\n");
+        printf("Допустимые значения: random, sequence, reverse\n");
+        the_end();
+    }
+
     int array[m][n];
-    logger("Объявление двумерного массива: M(%d) x N(%d)", m, n);
 
-    // Заполнение массива случайным значениями
+    // Заполнение массива
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            array[i][j] = random_num();
-            logger("Ячейка [%d][%d] получило случайное значение: %d", i, j, array[i][j]);
+            if (strcmp(mode, "random") == 0)
+            {
+                array[i][j] = random_num();
+            }
+            else if (strcmp(mode, "sequence") == 0)
+            {
+                array[i][j] = i * n + j + 1;
+            }
+            else if (strcmp(mode, "reverse") == 0)
+            {
+                array[i][j] = m * n - (i * n + j);
+            }
         }
     }
-    logger("Массив M x N заполнен случайными значениями");
 
     // Вывод изначального массива
-    printf("\n Изначальнный массив M(%d) x N(%d):\n", m, n);
+    printf("\nИзначальный массив M(%d) x N(%d):\n", m, n);
     for (int i = 0; i < m; i++)
     {
         for (int j = 0; j < n; j++)
@@ -125,9 +138,8 @@ int main(void)
         }
         printf("\n");
     }
-    logger("Вывод изначальный массива в терминал");
 
-    // Сортируем строки по возрастанию их минимальных элементов.
+    // Сортируем строки по возрастанию их минимальных элементов
     for (int i = 0; i < m - 1; i++)
     {
         int min_row = i;
@@ -142,13 +154,10 @@ int main(void)
             }
         }
 
-        logger("Строка [%d]: минимальный элемент = %d", i, min_value);
-
         // Проверяем остальные строки
         for (int k = i + 1; k < m; k++)
         {
             int current_min = array[k][0];
-
             for (int j = 1; j < n; j++)
             {
                 if (array[k][j] < current_min)
@@ -156,28 +165,16 @@ int main(void)
                     current_min = array[k][j];
                 }
             }
-
-            logger("Строка [%d]: минимальный элемент = %d", k, current_min);
-
-            logger("Сравнение минимумов строк [%d] и [%d]: %d и %d",
-                   min_row, k, min_value, current_min);
-
             if (current_min < min_value)
             {
                 min_value = current_min;
                 min_row = k;
-
-                logger("Найден новый минимум: %d в строке [%d]",
-                       min_value, min_row);
             }
         }
 
         // Меняем местами все элементы двух строк
         if (min_row != i)
         {
-            logger("Перестановка строк [%d] и [%d] (минимум = %d)",
-                   i, min_row, min_value);
-
             for (int j = 0; j < n; j++)
             {
                 int temp = array[i][j];
@@ -185,14 +182,9 @@ int main(void)
                 array[min_row][j] = temp;
             }
         }
-        else
-        {
-            logger("Строка [%d] уже находится на правильном месте", i);
-        }
     }
-    logger("Сортировака массива");
 
-    // Вывод отсортерованного массива
+    // Вывод отсортированного массива
     printf("\nОтсортированные строки массива M(%d) x N(%d) по минимальному элементу в строке:\n", m, n);
     for (int i = 0; i < m; i++)
     {
@@ -202,10 +194,8 @@ int main(void)
         }
         printf("\n");
     }
-    logger("Вывод отсортерованного массива в терминал");
 
     printf("\nНажмите Enter!\n");
     getchar();
-    logger("Программа успешно завершила работу");
     return 0;
 }
